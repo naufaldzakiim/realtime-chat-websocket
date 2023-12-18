@@ -50,19 +50,6 @@ export default function Index() {
 
   return (
     <AppLayout>
-      {/* <Stack align="center" style={{ minHeight: "100%" }}>
-        <Image
-          alt="profile picture"
-          radius={16}
-          src="/chat.png"
-          height={300}
-          width={300}
-          withPlaceholder
-          className=""
-        />
-        <Text align="center">Realtime Chat App</Text>
-        <Text align="center">Coming Soon</Text>
-      </Stack> */}
       <Flex
         mih="100%"
         gap="md"

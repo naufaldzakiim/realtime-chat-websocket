@@ -25,4 +25,10 @@ export default function middleware(request: NextRequest) {
   // if (request.nextUrl.pathname.startsWith("/chats/")) {
   //   return NextResponse.rewrite(new URL("/chats", request.url));
   // }
+
+  // if (request.nextUrl.pathname.startsWith("/chats/") && request.nextUrl.pathname !== "/chats/") {
+  //   const id = request.nextUrl.pathname.split("/")[2];
+  //   return NextResponse.rewrite(new URL(`/chats/${id}`, request.url));
+  // }
+  
 }
