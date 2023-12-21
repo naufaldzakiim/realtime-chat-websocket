@@ -36,7 +36,7 @@ const useStyles = createStyles((theme) => ({
   chatroom_active: {
     "&:hover": {
       cursor: "pointer",
-      backgroundColor: "#a92123",
+      backgroundColor: "#bc2828",
     },
   },
 }));
