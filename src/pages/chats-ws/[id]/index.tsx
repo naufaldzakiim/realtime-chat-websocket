@@ -22,6 +22,7 @@ import { useRouter } from "next/router";
 import api from "@/configs/axios-interceptors";
 import Cookies from "js-cookie";
 import ChatItem from "@/components/molekul/ChatItem";
+import { socket } from "@/configs/socket";
 
 const useStyles = createStyles((theme) => ({
   name: {
@@ -54,6 +55,7 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const { id } = router.query;
+  const {isReady} = router;
 
   const [chats, setChats] = useState<any>([]);
   const [chatRoom, setChatRoom] = useState<any>({});
@@ -86,21 +88,27 @@ export default function Index() {
     }
   };
 
-  const sendMessage = async () => {
-    try {
-      const response = await api.post("/chats/create", {
-        room_id: id,
-        message: form.values.message,
-      });
-      getChats();
-      form.reset();
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
-    }
+  // const sendMessage = async () => {
+  //   try {
+  //     const response = await api.post("/chats/create", {
+  //       room_id: id,
+  //       message: form.values.message,
+  //     });
+  //     getChats();
+  //     form.reset();
+  //   } catch (error) {
+  //     console.log(error);
+  //     setIsLoading(false);
+  //   }
 
-    console.log(form.values);
-  };
+  //   console.log(form.values);
+  // };
+  useEffect(() => {
+    if(isReady){
+      socket.emit("joinChat", { room_id: router.query.id });
+      console.log("join chat room");
+    }
+  },[isReady]);
 
   useEffect(() => {
     const userData = Cookies.get("user");
@@ -109,16 +117,21 @@ export default function Index() {
     getChats();
   }, [id]);
 
-  useEffect(() => {
-    //Implementing the setInterval method
-    const interval = setInterval(() => {
-        getChats();
-    }, 10);
 
-    //Clearing the interval
-    return () => clearInterval(interval);
-}, [chats]);
-  
+
+  function sendMessage() {
+    const message = {
+        message: form.values.message,
+    };
+
+    socket.emit("sendMessage", message);
+
+    socket.on("newMessage", (message) => {
+      // console.log(message);
+      setChats((chats: any) => [...chats, message]);
+    });
+    form.reset();
+}
 
   return (
     <AppLayout>
