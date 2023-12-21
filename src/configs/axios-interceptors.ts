@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 // Membuat instance Axios dengan konfigurasi default
 const API_URL = process.env.API_URL;
 const api = axios.create({
-    baseURL: "http://ppl-api.next-innovate.tech/api", // Ganti dengan URL API Anda
+    baseURL: "http://localhost:9000", // Ganti dengan URL API Anda
     timeout: 10000, // Timeout dalam milidetik
 });
 api.interceptors.request.use(
@@ -14,7 +14,7 @@ api.interceptors.request.use(
         const token = Cookies.get("token");
 
         if (token) {
-            config.headers["Authorization"] = `Bearer ${token}`;
+            config.headers["Authorization"] = `${token}`;
         }
         // console.log(config);
         return config;

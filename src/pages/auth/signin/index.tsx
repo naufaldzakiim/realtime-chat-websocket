@@ -62,7 +62,7 @@ export default function Index() {
           // console.log(response.data.token);
           Cookies.set("token", response.data.token);
           Cookies.set("user", JSON.stringify(response.data.profile));
-          Router.push("/dashboard");
+          Router.push("/chats");
         }
       } catch (error) {
         console.error("Error:", error);

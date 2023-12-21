@@ -49,11 +49,7 @@ export default function Index({ chatRooms }: ChatRoomListProps) {
   const { classes } = useStyles();
   const router = useRouter();
   const [id, setId] = useState<any>(null);
-  // if (router.query.id){
-  //   setId(router.query.id)
-  // }
-
-  // get id from url if exist
+  
   useEffect(() => {
     if (router.query.id) {
       setId(router.query.id);
@@ -61,22 +57,23 @@ export default function Index({ chatRooms }: ChatRoomListProps) {
   }, [router.query.id]);
 
   console.log("id", id);
+  console.log("chatRooms", chatRooms);
 
   return (
     <Stack justify="space-between" spacing={0} w="100%">
       {chatRooms.map((chatRoom: any) => {
-        console.log("chatRoom id", (chatRoom.chat_room_id).toString());
-        const isActive = (id == (chatRoom.chat_room_id).toString())
+        console.log("chatRoom id", chatRoom.room_id);
+        const isActive = (id == chatRoom.room_id)
         return (
           <Card
-            key={chatRoom.chat_room_id}
+            key={chatRoom.room_id}
             radius={0}
             py={8}
             px={12}
             bg={isActive ? "primary" : "white"}
             className={isActive ? classes.chatroom_active : classes.chatroom}
             onClick={() => {
-              Router.push(`/chats/${chatRoom.chat_room_id}`);
+              Router.push(`/chats/${chatRoom.room_id}`);
             }}            
           >
             <Grid align="center">
@@ -94,11 +91,11 @@ export default function Index({ chatRooms }: ChatRoomListProps) {
               <Grid.Col span="auto">
                 <Group position="apart">
                   <Text c={isActive ? "white" : "black"} size={16} align="left">
-                    {chatRoom.user_name}
+                    {chatRoom.recipient_name}
                   </Text>
-                  <Text c={isActive ? "white" : "black"} size={12} align="left">
+                  {/* <Text c={isActive ? "white" : "black"} size={12} align="left">
                     10:00
-                  </Text>
+                  </Text> */}
                 </Group>
                 <Text c={isActive ? "white" : "black"} size={14} align="left">
                   {chatRoom.message}

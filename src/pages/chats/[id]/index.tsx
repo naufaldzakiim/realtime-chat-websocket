@@ -13,76 +13,15 @@ import {
   Grid,
   ActionIcon,
 } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { IconAdjustments, IconPlane, IconSend } from "@tabler/icons-react";
 import { VscSend } from "react-icons/vsc";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import api from "@/configs/axios-interceptors";
+import { socket } from "@/configs/socket";
 import Cookies from "js-cookie";
 import ChatItem from "@/components/molekul/ChatItem";
-
-const chatRooms = [
-  {
-    chat_room_id: 1,
-    user_name: "Agus",
-    message: "Hai",
-  },
-  {
-    chat_room_id: 2,
-    user_name: "Bambang",
-    message: "Halo",
-  },
-  {
-    chat_room_id: 3,
-    user_name: "Cahyo",
-    message: "Punten",
-  },
-];
-
-const chats_1 = [
-  {
-    chat_room_id: 1,
-    sender_id: 1,
-    message: "Hai saya Agus",
-    created_at: "2023-01-02 09:00:00",
-  },
-  {
-    chat_room_id: 1,
-    sender_id: 2,
-    message: "Hello",
-    created_at: "2023-01-02 09:00:00",
-  },
-];
-
-const chats_2 = [
-  {
-    chat_room_id: 1,
-    sender_id: 1,
-    message: "Hai saya Bambang",
-    created_at: "2023-01-02 09:00:00",
-  },
-  {
-    chat_room_id: 1,
-    sender_id: 2,
-    message: "Hello",
-    created_at: "2023-01-02 09:00:00",
-  },
-];
-
-const chats_3 = [
-  {
-    chat_room_id: 1,
-    sender_id: 1,
-    message: "Hai saya Cahyo",
-    created_at: "2023-01-02 09:00:00",
-  },
-  {
-    chat_room_id: 1,
-    sender_id: 2,
-    message: "Hello",
-    created_at: "2023-01-02 09:00:00",
-  },
-];
 
 const useStyles = createStyles((theme) => ({
   name: {
@@ -119,39 +58,56 @@ export default function Index() {
   const [chats, setChats] = useState<any>([]);
   const [chatRoom, setChatRoom] = useState<any>({});
 
-  const getChatRoom = (roomId: any) => {
-    switch (roomId) {
-      case "1":
-        return chatRooms[0];
-      case "2":
-        return chatRooms[1];
-      case "3":
-        return chatRooms[2];
-      default:
-        return {};
+  const form = useForm({
+    initialValues: {
+      id: "",
+      message: "",
+    },
+  });
+
+  const getChats = async () => {
+    try {
+      const response = await api.get("/chats/list");
+      console.log(response.data.data.data);
+      setChats(response.data.data.data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const getChat = (roomId: any) => {
-    switch (roomId) {
-      case "1":
-        return chats_1;
-      case "2":
-        return chats_2;
-      case "3":
-        return chats_3;
-      default:
-        return [];
+  const getLastMessage = async () => {
+    try {
+      const response = await api.get("/chats/last-message");
+      console.log(response.data.data.data);
+      setChatRoom(response.data.data.data[0]);
+      console.log(chatRoom);
+    } catch (error) {
+      console.log(error);
     }
+  };
+
+  const sendMessage = async () => {
+    try {
+      const response = await api.post("/chats/create", {
+        room_id: id,
+        message: form.values.message,
+      });
+      getChats();
+      form.reset();
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+
+    console.log(form.values);
   };
 
   useEffect(() => {
-    // const userData = Cookies.get("user");
-    // userData && setUser(JSON.parse(userData));
-    const chatRoom = getChatRoom(id);
-    setChatRoom(chatRoom);
-    const chats = getChat(id);
-    setChats(chats);
+    const userData = Cookies.get("user");
+    userData && setUser(JSON.parse(userData));
+    getLastMessage();
+    // socket.emit("joinChat", id);
+    getChats();
   }, [id]);
 
   return (
@@ -171,14 +127,14 @@ export default function Index() {
               />
             </Grid.Col>
             <Grid.Col span="auto">
-              <Text size="lg">{chatRoom.user_name}</Text>
+              <Text size="lg">{chatRoom.recipient_name}</Text>
             </Grid.Col>
           </Grid>
           <Stack spacing={0} w="100%" h="100%" bg="gray.3">
             {chats.map((chat: any) => {
               return (
                 <>
-                  {chat.sender_id == 2 ? (
+                  {chat.sender_id == user.id ? (
                     <ChatItem chat={chat} position="right" />
                   ) : (
                     <ChatItem chat={chat} position="left" />
@@ -193,18 +149,20 @@ export default function Index() {
                 placeholder="Tulis Pesan"
                 radius={8}
                 size="sm"
-                onChange={(e) => {
-                  // setSearch(e.currentTarget.value);
-                }}
+                {...form.getInputProps("message")}
               />
             </Grid.Col>
             <Grid.Col span="content">
               <ActionIcon
                 color="teal"
-                size="md"
+                size="lg"
                 radius="lg"
                 pl={2}
+                m={0}
                 variant="filled"
+                onClick={() => {
+                  sendMessage();
+                }}
               >
                 <VscSend />
               </ActionIcon>

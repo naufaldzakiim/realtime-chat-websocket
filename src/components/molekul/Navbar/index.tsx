@@ -16,6 +16,7 @@ import {
   Input,
 } from "@mantine/core";
 import { IconListSearch, IconSearch } from "@tabler/icons-react";
+import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import api from "@/configs/axios-interceptors";
 import router from "next/router";
@@ -27,12 +28,20 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export type NavbarProps = {
-  chatRooms: any;
-};
-
-export default function Index({ chatRooms }: NavbarProps) {
+export default function Index() {
   const { classes } = useStyles();
+  const [chatRooms, setChatRooms] = useState([]);
+
+  const getLastMessage = async () => {
+    try {
+      const response = await api.get("/chats/last-message");
+      console.log(response.data.data.data);
+      setChatRooms(response.data.data.data);
+      console.log(chatRooms);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const onLogout = async () => {
     try {
@@ -44,6 +53,10 @@ export default function Index({ chatRooms }: NavbarProps) {
       console.log("Error:", error);
     }
   };
+
+  useEffect(() => {
+    getLastMessage();
+  }, []);
 
   return (
     <Card radius="md" h="100%" p={0}>

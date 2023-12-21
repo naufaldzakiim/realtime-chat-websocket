@@ -8,18 +8,18 @@ export default function middleware(request: NextRequest) {
   const user = userData && JSON.parse(userData.value);
 
   // redirect unauthenticated users to signin page
-  // if (
-  //   (request.nextUrl.pathname.startsWith("/chats")) &&
-  //   !token
-  // ) {
-  //   // console.log("dont have token");
-  //   return NextResponse.redirect(new URL("/auth/signin", request.url));
-  // }
+  if (
+    (request.nextUrl.pathname.startsWith("/chats")) &&
+    !token
+  ) {
+    // console.log("dont have token");
+    return NextResponse.redirect(new URL("/auth/signin", request.url));
+  }
 
   // redirect authenticated users to chats page
-  // if (token && request.nextUrl.pathname.startsWith("/auth")) {
-  //   return NextResponse.redirect(new URL("/chats", request.url));
-  // }
+  if (token && request.nextUrl.pathname.startsWith("/auth")) {
+    return NextResponse.redirect(new URL("/chats", request.url));
+  }
 
   // rewrite chats/id to chats
   // if (request.nextUrl.pathname.startsWith("/chats/")) {

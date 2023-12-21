@@ -9,7 +9,7 @@ export type ChatItemProps = {
 export default function index({chat, position = "left"}:ChatItemProps) {
   if (position === "left") {
     return (
-      <Flex key={chat.chat_room_id} align="center" justify="start" px={16} py={8}>
+      <Flex key={chat.room_id} align="center" justify="start" px={16} py={8}>
         <Box mr={8}>
           <Image
             alt="profile picture"
@@ -30,7 +30,7 @@ export default function index({chat, position = "left"}:ChatItemProps) {
   
   else if (position === "right") {
     return (
-      <Flex key={chat.chat_room_id} align="center" justify="end" direction="row-reverse" px={16} py={8}>
+      <Flex key={chat.room_id} align="center" justify="end" direction="row-reverse" px={16} py={8}>
         <Box ml={8}>
           <Image
             alt="profile picture"
